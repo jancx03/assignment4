@@ -1,3 +1,4 @@
+
 import React, {Component} from 'react';
 import {BrowserRouter as Router} from 'react-router-dom';
 import {Switch, Route} from 'react-router-dom';
@@ -10,12 +11,38 @@ class App extends Component {
     super();
 
     this.state = {
-      accountBalance: 14568.27,
+      accountBalance: 0,
       currentUser: {
         userName: 'joe_shmo',
         memberSince: '07/23/96',
-      }
+      },
+      debits: [],
+      credits: [],
+
     };
+  }
+
+  async componentDidMount() {
+    // Fetching debits from datapoint
+    const debits_response = await fetch('https://moj-api.herokuapp.com/debits')
+    const debits = await debits_response.json()
+
+    // Fetching credits from datapoint
+    const credits_response = await fetch('https://moj-api.herokuapp.com/credits')
+    const credits = await credits_response.json()
+
+    // Calculating total from credits subtracting debits
+    let total = 0
+    // adding credits and subtracting debits from the total 
+    credits.map(credit => total += +credit.amount)
+    debits.map(debit => total -= +debit.amount)
+    
+    // Updating state with new data
+    this.setState({
+      debits, 
+      credits, 
+      accountBalance: Math.round((total + Number.EPSILON) * 100) / 100
+    })
   }
 
   mockLogIn = (logInInfo) => {
@@ -24,7 +51,11 @@ class App extends Component {
     this.setState({ currentUser: newUser });
   };
 
+  addDebit = () => {}
+  addCredit = () => {}
+
   render() {
+
     return (
       <Router>
         <Switch>
