@@ -5,10 +5,11 @@ import {Switch, Route} from 'react-router-dom';
 import Home from './components/Home';
 import UserProfile from './components/UserProfile'
 import LogIn from './components/Login';
+import Debits from './components/Debits'
 
 class App extends Component {
   constructor(props) {
-    super();
+    super(props);
 
     this.state = {
       accountBalance: 0,
@@ -31,18 +32,27 @@ class App extends Component {
     const credits_response = await fetch('https://moj-api.herokuapp.com/credits')
     const credits = await credits_response.json()
 
-    // Calculating total from credits subtracting debits
-    let total = 0
-    // adding credits and subtracting debits from the total 
-    credits.map(credit => total += +credit.amount)
-    debits.map(debit => total -= +debit.amount)
+    const accountBalance = this.calculateBalance(debits, credits)
     
     // Updating state with new data
     this.setState({
       debits, 
       credits, 
-      accountBalance: Math.round((total + Number.EPSILON) * 100) / 100
+      accountBalance
     })
+  }
+
+  // Calculating total from credits subtracting debits
+  calculateBalance = (debits = this.state.debits, credits = this.state.credits) => {
+    let total = 0
+    
+    // adding credits and subtracting debits from the total 
+    credits.map(credit => total += +credit.amount)
+    debits.map(debit => total -= +debit.amount)
+
+    total = Math.round((total + Number.EPSILON) * 100) / 100
+
+    return total
   }
 
   mockLogIn = (logInInfo) => {
@@ -51,7 +61,14 @@ class App extends Component {
     this.setState({ currentUser: newUser });
   };
 
-  addDebit = () => {}
+  addDebit = (debit) => {
+    const debits = [...this.state.debits]
+    debits.push(debit)
+    this.setState({debits: debits}, () => {
+      const accountBalance = this.calculateBalance()
+      this.setState({accountBalance})
+    })
+  }
   addCredit = () => {}
 
   render() {
@@ -77,6 +94,15 @@ class App extends Component {
             exact
             path='/accountbalance'
             render={() => <h1> Account Balance Route </h1>}
+          />
+          <Route
+            exact
+            path='/debits'
+            render={() => <Debits 
+                            debits={this.state.debits} 
+                            addDebit={this.addDebit} 
+                            accountBalance={this.state.accountBalance} />
+            }
           />
         </Switch>
       </Router>
