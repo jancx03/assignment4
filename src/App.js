@@ -6,6 +6,7 @@ import Home from './components/Home';
 import UserProfile from './components/UserProfile'
 import LogIn from './components/Login';
 import Debits from './components/Debits'
+import Credits from './components/Credits'
 
 class App extends Component {
   constructor(props) {
@@ -69,7 +70,14 @@ class App extends Component {
       this.setState({accountBalance})
     })
   }
-  addCredit = () => {}
+  addCredit = (credit) => {
+    const credits = [...this.state.credits]
+    credits.push(credit)
+    this.setState({credits: credits}, () => {
+      const accountBalance = this.calculateBalance()
+      this.setState({accountBalance})
+    })
+  }
 
   render() {
 
@@ -101,6 +109,15 @@ class App extends Component {
             render={() => <Debits 
                             debits={this.state.debits} 
                             addDebit={this.addDebit} 
+                            accountBalance={this.state.accountBalance} />
+            }
+          />
+          <Route
+            exact
+            path='/credits'
+            render={() => <Credits 
+                            credits={this.state.credits} 
+                            addCredit={this.addCredit} 
                             accountBalance={this.state.accountBalance} />
             }
           />
