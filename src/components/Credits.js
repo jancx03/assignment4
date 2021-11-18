@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
-import { uuid } from 'uuidv4'
 import { Link } from 'react-router-dom'
+// Module used to generate unique id
+import { uuid } from 'uuidv4'
+import AccountBalance from './AccountBalance'
 
 class Credits extends Component {
   constructor(props) {
@@ -16,9 +18,8 @@ class Credits extends Component {
 
   addCredit = (e) => {
     e.preventDefault()
-    console.log(this.state.amount)
 
-
+    // Create credit object and call addCredit from app.js
     this.props.addCredit({
       id: uuid(),
       date: new Date().toISOString(),
@@ -44,7 +45,7 @@ class Credits extends Component {
     return (
       <section>
         <Link to="/" >Back to Home</Link>
-        <p>Account Balance: {this.props.accountBalance}</p>
+        <AccountBalance accountBalance={this.props.accountBalance}/>
 
         <h1>Credits</h1>
 
@@ -69,7 +70,7 @@ class Credits extends Component {
             onChange={(val) => this.setState({description: val.target.value})} />
           <label>Amount:</label>
           <input
-            type='text'
+            type='number'
             value={this.state.amount}
             onChange={(val) => {this.setState({ amount: val.target.value })}}
           />

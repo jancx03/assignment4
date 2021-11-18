@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { uuid } from 'uuidv4'
 import { Link } from 'react-router-dom'
+import AccountBalance from './AccountBalance'
 
 class Debits extends Component {
   constructor(props) {
@@ -16,9 +17,8 @@ class Debits extends Component {
 
   addDebit = (e) => {
     e.preventDefault()
-    console.log(this.state.amount)
 
-
+    // Create debit object and call addDebit from app.js
     this.props.addDebit({
       id: uuid(),
       date: new Date().toISOString(),
@@ -43,8 +43,8 @@ class Debits extends Component {
 
     return (
       <section>
-        <Link to="/" >Back to Home</Link>
-        <p>Account Balance: {this.props.accountBalance}</p>
+        <Link to='/'>Back to Home</Link>
+        <AccountBalance accountBalance={this.props.accountBalance} />
 
         <h1>Debits</h1>
 
@@ -63,15 +63,18 @@ class Debits extends Component {
         <h3>Add Debit</h3>
         <form onSubmit={this.addDebit}>
           <label>Description:</label>
-          <input 
-            type='text' 
-            value={this.state.description} 
-            onChange={(val) => this.setState({description: val.target.value})} />
-          <label>Amount:</label>
           <input
             type='text'
+            value={this.state.description}
+            onChange={(val) => this.setState({ description: val.target.value })}
+          />
+          <label>Amount:</label>
+          <input
+            type='number'
             value={this.state.amount}
-            onChange={(val) => {this.setState({ amount: val.target.value })}}
+            onChange={(val) => {
+              this.setState({ amount: val.target.value });
+            }}
           />
           <button>Add Debit</button>
         </form>
